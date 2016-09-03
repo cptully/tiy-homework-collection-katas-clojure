@@ -16,7 +16,7 @@
 ;; "rotated left" so [1, 2, 3] yields [2, 3, 1].)
 (defn rotate-left [ints]
   (let [[x & remaining] ints]
-    (vector remaining x)))
+    (to-array (vector remaining x))))
 
 ;; Given an ArrayList of Integers length 3, return a new ArrayList with the
 ;; elements in reverse order, so [1, 2, 3] becomes [3, 2, 1].)
@@ -35,17 +35,68 @@
       (first ints)
       0)))
 
-
-
 ;; Modify and return the given HashMap as follows: if the key "a" has a value,
 ;; set the key "b" to have that value, and set the key "a" to have the value "".
 ;; Basically "b" is a bully, taking the value of "a".
-;; (defn mapBully [hash]
-;;   (if (contains? hash "a")
-;;      (if (contains? hash "b")
-;;        (let hash.replace("b", hash.get("a";
-;;                                         hash.replace("a", "";
-;;                                                       else {
-;;                                                             hash.put("b", hash.get("a";
-;;                                                                                     hash.replace("a", ""));
-;;                                                                                  return hash)})))))))
+(defn map-bully [hash]
+  (if (contains? hash "a")
+    (if (contains? hash "b")
+      (assoc hash "b" (hash "a") "a" ""))))
+
+;; Modify and return the given HashMap as follows: if the key "a" has a value,
+;; set the key "b" to have that same value. In all cases remove the key "c",
+;; leaving the rest of the map unchanged.
+(defn map-share [hash]
+  (if (contains? hash "c")
+    (dissoc
+      (if (contains? hash "a")
+        (if (contains? hash "b")
+          (assoc hash "b" (hash "a")))) "c")
+    (if (contains? hash "a")
+       (if (contains? hash "b")
+         (assoc hash "b" (hash "a"))))))
+
+;; Modify and return the given HashMap as follows: for this problem the HashMap
+;; may or may not contain the "a" and "b" keys. If both keys are present,
+;; append their 2 string values together and store the result under the key "ab".
+(defn map-ab [hash]
+  (if (contains? hash "a")
+    (if (contains? hash "b")
+      (assoc hash "ab" (str (hash "a") (hash "b")))
+      hash)
+    hash))
+
+
+;; Given an ArrayList of strings, return a HashMap containing a key for every
+;; different string in the ArrayList, and the value is that string's length.
+(defn word-len [word-list]
+  (let [xf (map count)]
+    (zipmap (map keyword word-list) (transduce xf conj word-list))))
+
+;; Given an ArrayList of words, return a HashMap containing a keys for every
+;; word's first letter. The value for the key will be an ArrayList of all
+;; words in the list that start with that letter. An empty string has no first
+;; letter so don't add a key for it.
+;(defn index-words [word-list]
+;  (let [word-list word-list
+;        index (map keyword (set (map #(subs % 0 1) word-list)))]
+;      (update-in index (subs word 0 1) (let [words (index (subs word 0 1))
+;                                             word word]
+;                                         (conj words word)))
+;      (assoc index (subs word 0 1) (conj nil word))
+;    (if (empty? word-list)
+;      index
+;      (recur (rest word-list) index))))
+
+; based on this question:
+; http://stackoverflow.com/questions/39307670/building-a-hashmap-from-an-array-in-clojure/39308362#39308362
+; I have tried these:
+;list of keywords based on word-list
+;word-list
+;=> ["aardvark" "apple" "zamboni" "phone"]
+;(map keyword (set (map #(subs % 0 1) word-list)))
+;=> (:z :p :a)
+
+; a hash set of the string
+;(reduce conj #{} word-list)
+;=> #{"aardvark" "zamboni" "apple" "phone"}
